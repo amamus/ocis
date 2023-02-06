@@ -13,10 +13,10 @@ import (
 	// "github.com/owncloud/ocis/v2/services/static/pkg/server/debug"
 	"github.com/owncloud/ocis/v2/services/static-file-server/pkg/server/http"
 
-	// "github.com/owncloud/ocis/v2/services/static/pkg/metrics"
+	"github.com/owncloud/ocis/v2/services/static-file-server/pkg/metrics"
 	// "github.com/owncloud/ocis/v2/services/static/pkg/server/debug"
 	// "github.com/owncloud/ocis/v2/services/static/pkg/server/http"
-	// "github.com/owncloud/ocis/v2/services/static/pkg/tracing"
+	"github.com/owncloud/ocis/v2/services/static-file-server/pkg/tracing"
 	"github.com/urfave/cli/v2"
 )
 
@@ -31,10 +31,10 @@ func Server(cfg *config.Config) *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			logger := logging.Configure(cfg.Service.Name, cfg.Log)
-			// err := tracing.Configure(cfg)
-			// if err != nil {
-			// 	return err
-			// }
+			err := tracing.Configure(cfg)
+			if err != nil {
+				return err
+			}
 
 			// // actually read the contents of the config file and override defaults
 			// if cfg.File != "" {
@@ -57,7 +57,7 @@ func Server(cfg *config.Config) *cli.Command {
 					}
 					return context.WithCancel(cfg.Context)
 				}()
-				// metrics = metrics.New()
+				metrics = metrics.New()
 			)
 
 			defer cancel()
@@ -69,7 +69,7 @@ func Server(cfg *config.Config) *cli.Command {
 					http.Namespace(cfg.HTTP.Namespace),
 					http.ServiceName(cfg.Service.Name),
 					http.Config(cfg),
-					// http.Metrics(metrics),
+					http.Metrics(metrics),
 				)
 
 				if err != nil {
