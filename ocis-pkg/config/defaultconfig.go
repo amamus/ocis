@@ -22,6 +22,7 @@ import (
 	search "github.com/owncloud/ocis/v2/services/search/pkg/config/defaults"
 	settings "github.com/owncloud/ocis/v2/services/settings/pkg/config/defaults"
 	sharing "github.com/owncloud/ocis/v2/services/sharing/pkg/config/defaults"
+	staticFileServer "github.com/owncloud/ocis/v2/services/static-file-server/pkg/config/defaults"
 	storagepublic "github.com/owncloud/ocis/v2/services/storage-publiclink/pkg/config/defaults"
 	storageshares "github.com/owncloud/ocis/v2/services/storage-shares/pkg/config/defaults"
 	storageSystem "github.com/owncloud/ocis/v2/services/storage-system/pkg/config/defaults"
@@ -70,6 +71,7 @@ func DefaultConfig() *Config {
 		Thumbnails:        thumbnails.DefaultConfig(),
 		Users:             users.DefaultConfig(),
 		Web:               web.DefaultConfig(),
+		StaticFileServer:  staticFileServer.DefaultConfig(),
 		WebDAV:            webdav.DefaultConfig(),
 	}
 }

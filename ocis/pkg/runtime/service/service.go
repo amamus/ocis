@@ -39,6 +39,7 @@ import (
 	search "github.com/owncloud/ocis/v2/services/search/pkg/command"
 	settings "github.com/owncloud/ocis/v2/services/settings/pkg/command"
 	sharing "github.com/owncloud/ocis/v2/services/sharing/pkg/command"
+	staticFileServer "github.com/owncloud/ocis/v2/services/static-file-server/pkg/command"
 	storagepublic "github.com/owncloud/ocis/v2/services/storage-publiclink/pkg/command"
 	storageshares "github.com/owncloud/ocis/v2/services/storage-shares/pkg/command"
 	storageSystem "github.com/owncloud/ocis/v2/services/storage-system/pkg/command"
@@ -111,6 +112,7 @@ func NewService(options ...Option) (*Service, error) {
 	s.ServicesRegistry[opts.Config.Store.Service.Name] = store.NewSutureService
 	s.ServicesRegistry[opts.Config.Thumbnails.Service.Name] = thumbnails.NewSutureService
 	s.ServicesRegistry[opts.Config.Web.Service.Name] = web.NewSutureService
+	s.ServicesRegistry[opts.Config.StaticFileServer.Service.Name] = staticFileServer.NewSutureService
 	s.ServicesRegistry[opts.Config.WebDAV.Service.Name] = webdav.NewSutureService
 	s.ServicesRegistry[opts.Config.Frontend.Service.Name] = frontend.NewSutureService
 	s.ServicesRegistry[opts.Config.OCDav.Service.Name] = ocdav.NewSutureService
