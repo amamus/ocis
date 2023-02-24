@@ -1670,6 +1670,25 @@ class FeatureContext extends BehatVariablesContext {
 	}
 
 	/**
+	 * @Then the ocs JSON data of the response should match
+	 *
+	 * @param PyStringNode $schemaString
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	public function theOcsDataOfTheResponseShouldMatch(
+		PyStringNode $schemaString
+	): void {
+		$jsonResponse = $this->getJsonDecodedResponseBodyContent();
+		JsonAssertions::assertJsonDocumentMatchesSchema(
+			$jsonResponse->ocs->data,
+			$this->getJSONSchema($schemaString)
+		);
+	}
+
+	/**
 	 * @Then the JSON data of the response should match
 	 *
 	 * @param PyStringNode $schemaString
@@ -1683,7 +1702,7 @@ class FeatureContext extends BehatVariablesContext {
 	): void {
 		$jsonResponse = $this->getJsonDecodedResponseBodyContent();
 		JsonAssertions::assertJsonDocumentMatchesSchema(
-			$jsonResponse->ocs->data,
+			$jsonResponse,
 			$this->getJSONSchema($schemaString)
 		);
 	}
@@ -3298,6 +3317,14 @@ class FeatureContext extends BehatVariablesContext {
 				"function" => [
 					$this,
 					"getLastPublicShareToken"
+				],
+				"parameter" => []
+			],
+			[
+				"code" => "%group_id_pattern%",
+				"function" => [
+					__NAMESPACE__ . '\TestHelpers\GraphHelper',
+					"getUUIDv4Regex"
 				],
 				"parameter" => []
 			],
