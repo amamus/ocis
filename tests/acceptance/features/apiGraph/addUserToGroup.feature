@@ -120,24 +120,47 @@ Feature: add users to group
       | Alice    | var/../etc       |
 
 
-  Scenario: normal user tries to add himself to a group
-    Given group "groupA" has been created
+  Scenario Outline: normal user tries to add himself to a group
+    Given the administrator has assigned the role "<role>" to user "Alice" using the Graph API
+    And group "groupA" has been created
     When user "Alice" tries to add himself to group "groupA" using the Graph API
     Then the HTTP status code should be "401"
     And the last response should be an unauthorized response
+    Examples:
+      | role        |
+      | Space Admin |
+      | User        |
+      | Guest       |
 
 
-  Scenario: normal user tries to other user to a group
+  Scenario Outline: normal user tries to other user to a group
     Given user "Brian" has been created with default attributes and without skeleton files
+    And the administrator has assigned the role "<role>" to user "Brian" using the Graph API
     And group "groupA" has been created
     When user "Alice" tries to add user "Brian" to group "groupA" using the Graph API
     Then the HTTP status code should be "401"
     And the last response should be an unauthorized response
+    Examples:
+      | role        |
+      | Space Admin |
+      | User        |
+      | Guest       |
 
 
   Scenario: admin tries to add user to a non-existing group
     When the administrator tries to add user "Alice" to group "nonexistentgroup" using the Graph API
     Then the HTTP status code should be "404"
+
+
+  Scenario Outline: normal user tries to add user to a non-existing group
+    Given the administrator has assigned the role "<role>" to user "Alice" using the Graph API
+    When the administrator tries to add user "Alice" to group "nonexistentgroup" using the Graph API
+    Then the HTTP status code should be "404"
+    Examples:
+      | role        |
+      | Space Admin |
+      | User        |
+      | Guest       |
 
 
   Scenario: admin tries to add a non-existing user to a group

@@ -4,7 +4,7 @@ Feature: create group
 
   Background:
     Given user "Alice" has been created with default attributes and without skeleton files
-    And the administrator has given "Alice" the role "Admin" using the settings api
+    And the administrator has assigned the role "Admin" to user "Alice" using the Graph API
 
 
   Scenario Outline: admin user creates a group
@@ -30,13 +30,44 @@ Feature: create group
     And group "mygroup" should exist
 
 
-  Scenario: normal user tries to create a group
+  Scenario Outline: normal user tries to create a group
     Given user "Brian" has been created with default attributes and without skeleton files
+    And the administrator has assigned the role "<userRole>" to user "Brian" using the Graph API
     When user "Brian" tries to create a group "mygroup" using the Graph API
     And the HTTP status code should be "401"
     And group "mygroup" should not exist
+    Examples:
+      | userRole    |
+      | Space Admin |
+      | User        |
+      | Guest       |
+
+
+  Scenario Outline: normal user tries to create a group that already exists
+    Given group "mygroup" has been created
+    And user "Brian" has been created with default attributes and without skeleton files
+    And the administrator has assigned the role "<userRole>" to user "Brian" using the Graph API
+    When user "Brian" tries to create a group "mygroup" using the Graph API
+    And the HTTP status code should be "403"
+    And group "mygroup" should exist
+    Examples:
+      | userRole    |
+      | Space Admin |
+      | User        |
+      | Guest       |
 
 
   Scenario: admin user tries to create a group that is the empty string
     When user "Alice" tries to create a group "" using the Graph API
     Then the HTTP status code should be "400"
+
+
+  Scenario Outline: normal user tries to create a group that is the empty string
+    Given the administrator has assigned the role "<userRole>" to user "Alice" using the Graph API
+    When user "Alice" tries to create a group "" using the Graph API
+    Then the HTTP status code should be "403"
+    Examples:
+      | userRole    |
+      | Space Admin |
+      | User        |
+      | Guest       |
