@@ -720,16 +720,15 @@ trait Provisioning {
 		}
 		if (isset($setting["email"])) {
 			$entry['mail'] = $setting["email"];
-		} elseif (OcisHelper::isTestingOnOcis()) {
+		} else {
 			$entry['mail'] = $userId . '@owncloud.com';
 		}
 		$entry['gidNumber'] = 5000;
 		$entry['uidNumber'] = $uidNumber;
 
-		if (OcisHelper::isTestingOnOcis()) {
-			$entry['objectclass'][] = 'ownCloud';
-			$entry['ownCloudUUID'] = WebDavHelper::generateUUIDv4();
-		}
+		$entry['objectclass'][] = 'ownCloud';
+		$entry['ownCloudUUID'] = WebDavHelper::generateUUIDv4();
+
 		if (OcisHelper::isTestingParallelDeployment()) {
 			$entry['ownCloudSelector'] = $this->getOCSelector();
 		}
@@ -765,10 +764,9 @@ trait Provisioning {
 			$entry['objectclass'][] = 'groupOfNames';
 			$entry['member'] = "";
 		}
-		if (OcisHelper::isTestingOnOcis()) {
-			$entry['objectclass'][] = 'ownCloud';
-			$entry['ownCloudUUID'] = WebDavHelper::generateUUIDv4();
-		}
+		$entry['objectclass'][] = 'ownCloud';
+		$entry['ownCloudUUID'] = WebDavHelper::generateUUIDv4();
+
 		$this->ldap->add($newDN, $entry);
 		$this->ldapCreatedGroups[] = $group;
 	}
@@ -1109,7 +1107,7 @@ trait Provisioning {
 			$this->manuallyAddSkeletonFiles($usersAttributes);
 		}
 
-		if ($initialize && ($this->isEmptySkeleton() || !OcisHelper::isTestingOnOcis())) {
+		if ($initialize && $this->isEmptySkeleton()) {
 			// We need to initialize each user using the individual authentication of each user.
 			// That is not possible in Guzzle6 batch mode. So we do it with normal requests in serial.
 			$this->initializeUsers($users);
@@ -3292,13 +3290,11 @@ trait Provisioning {
 		} elseif (OcisHelper::isTestingWithGraphApi()) {
 			$requestingUser = $this->getAdminUsername();
 			$requestingPassword = $this->getAdminPassword();
-		} elseif (OcisHelper::isTestingOnOcis()) {
+		} else {
 			$requestingUser = 'moss';
 			$requestingPassword = 'vista';
-		} else {
-			$requestingUser = $this->getActualUsername($user);
-			$requestingPassword = $this->getPasswordForUser($requestingUser);
 		}
+
 		$path = (OcisHelper::isTestingWithGraphApi())
 			? "/graph/v1.0"
 			: "/ocs/v2.php/cloud";
