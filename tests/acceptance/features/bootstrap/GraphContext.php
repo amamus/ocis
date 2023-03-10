@@ -10,8 +10,10 @@ declare(strict_types=1);
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use GuzzleHttp\Exception\GuzzleException;
+use Helmich\JsonAssert\JsonAssertions;
 use Psr\Http\Message\ResponseInterface;
 use TestHelpers\GraphHelper;
 use TestHelpers\WebDavHelper;
@@ -2061,6 +2063,37 @@ class GraphContext implements Context {
 		);
 	}
 
+    /**
+     * @Then /^the JSON data of the response should contain display name "([^"]*)" and match$/
+     * @Then /^the JSON data of the response should contain group name "([^"]*)" and match$/
+     *
+     * @param string $displayName
+     * @param PyStringNode $schemaString
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function theJsonDataResponseShouldContainDisplayNameAndMatch(
+        string $displayName,
+        PyStringNode $schemaString
+    ): void {
+        if (isset($this->featureContext->getJsonDecodedResponseBodyContent()->value)) {
+            $responseBody = $this->featureContext->getJsonDecodedResponseBodyContent()->value;
+        } else {
+            $responseBody = $this->featureContext->getJsonDecodedResponseBodyContent();
+        }
+        foreach ($responseBody as $value) {
+            if (isset($value->displayName) && $value->displayName === $displayName) {
+                $responseBody = $value;
+                break;
+            }
+        }
+        JsonAssertions::assertJsonDocumentMatchesSchema(
+            $responseBody,
+            $this->featureContext->getJSONSchema($schemaString)
+        );
+    }
+
 	/**
 	 * @Given /^the administrator "([^"]*)" has added the following users to a group "([^"]*)" at once using the Graph API$/
 	 *
@@ -2114,3 +2147,7 @@ class GraphContext implements Context {
 		);
 	}
 }
+
+}
+
+
